@@ -7,30 +7,28 @@ class BoardView {
         this.rootElem = rootElem;
 
         this.model = model;
-        
         this.controller = controller;
+
+        this.canvas = Helper.elt('canvas');
+        this.ctx = this.canvas.getContext('2d');
 
         this.build();
         this.buildCheckers();
     }
 
     build() {
-        let rows = [];
-
         for(let i = 0; i < this.model.height; i += 1) {
-            let cells = [];
-
             for(let j = 0; j < this.model.width; j += 1) {
                 let cell = this.model.rows[i].cells[j];
-                cells.push(
-                    Helper.elt('td', {'class': cell.color ? 'white' : 'black'})
-                );
+                //cells.push(
+                //    Helper.elt('td', {'class': cell.color ? 'white' : 'black'})
+                //);
+                //
+
             }
 
             rows.push(Helper.elt('tr', {}, cells));
         }
-
-        this.boardWrapper = Helper.elt('table', {'class': 'board'}, rows);
         
     }
 

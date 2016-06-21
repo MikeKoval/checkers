@@ -119,30 +119,28 @@ class BoardView {
         this.rootElem = rootElem;
 
         this.model = model;
-        
         this.controller = controller;
+
+        this.canvas = Helper.elt('canvas');
+        this.ctx = this.canvas.getContext('2d');
 
         this.build();
         this.buildCheckers();
     }
 
     build() {
-        let rows = [];
-
         for(let i = 0; i < this.model.height; i += 1) {
-            let cells = [];
-
             for(let j = 0; j < this.model.width; j += 1) {
                 let cell = this.model.rows[i].cells[j];
-                cells.push(
-                    Helper.elt('td', {'class': cell.color ? 'white' : 'black'})
-                );
+                //cells.push(
+                //    Helper.elt('td', {'class': cell.color ? 'white' : 'black'})
+                //);
+                //
+
             }
 
             rows.push(Helper.elt('tr', {}, cells));
         }
-
-        this.boardWrapper = Helper.elt('table', {'class': 'board'}, rows);
         
     }
 
@@ -183,57 +181,12 @@ class BoardController {
         this.view = new BoardView(this.model, this, rootElem, width, height);
 
         this.init();
-        this.initEvents();
+        //this.initEvents();
     }
     
     init() {
         this.view.draw();
-        this.view.drawCheckers();
-    }
-
-    initEvents() {
-        for(let i = 0; i < this.view.checkers.length; i += 1) {
-            let checkerEl = this.view.checkers[i];
-
-            checkerEl.addEventListener('mousedown', function(e) {
-                var coords = Helper.getCoords(checkerEl);
-
-                var shiftX = e.pageX - coords.left;
-                var shiftY = e.pageY - coords.top;
-
-                let moveAt = function(e) {
-                    checkerEl.style.left = e.pageX - shiftX + 'px';
-                    checkerEl.style.top = e.pageY - shiftY + 'px';
-                };
-
-                let mouseMoveEventListener = function(e) {
-                    moveAt(e);
-                };
-
-                let mouseUpEventListener = function (e) {
-                    document.removeEventListener('mousemove', mouseMoveEventListener);
-                    checkerEl.removeEventListener('mouseup', mouseUpEventListener);
-                };
-
-                checkerEl.style.position = 'absolute';
-                moveAt(e);
-
-                document.body.appendChild(checkerEl);
-
-                checkerEl.style.zIndex = 1000;
-
-
-                document.addEventListener('mousemove', mouseMoveEventListener);
-
-                checkerEl.addEventListener('mouseup', mouseUpEventListener);
-
-                checkerEl.ondragstart = function() {
-                    return false;
-                };
-            });
-
-
-        }
+        //this.view.drawCheckers();
     }
 }
 
