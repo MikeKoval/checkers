@@ -1,5 +1,5 @@
 export
-class Cell {
+class CellView {
 	constructor(model, controller) {
 		this.model = model;
 		this.controller = controller;
@@ -8,8 +8,8 @@ class Cell {
 	}
 
 	draw() {
-		this.ctx.fillStyle = cell.color ? 'white' : 'black';
-		this.ctx.fillRect(
+		this.model.board.ctx.fillStyle = cell.color ? 'white' : 'black';
+		this.model.board.ctx.fillRect(
 			this.model.index * this.size,
 			this.model.row.index * this.size,
 			this.size,
