@@ -1,3 +1,19 @@
+class CellModel {
+    get checker() {
+        return this._checker;
+    }
+    set checker(value) {
+        this._checker = value;
+    }
+
+    constructor(board, point, color) {
+        this.board = board;
+        this.color = color;
+
+        this.point = point;
+    }
+}
+
 class Point {
     constructor(x, y) {
         this.x = x;
@@ -5,22 +21,30 @@ class Point {
     }
 }
 
-class CellModel {
-    constructor(row, board, index, color) {
-        this.board = board;
-        this.row = row;
-        this.index = index;
-        this.color = color;
-
-        this.point = new Point(index, this.row.index);
+class BoardModel {
+    get checkers() {
+        return this._checkers;
     }
-}
 
-class RowModel {
-    constructor(board, index, width) {
-        this.board = board;
-        this.index = index;
+    set checkers(checkers) {
+        this._checkers = [];
+
+        for(let i = 0; i < this.height; i += 1) {
+            this._checkers[i] = [];
+
+            for(let j = 0; j < this.width; j += 1) {
+                this._checkers[i][j] = null;
+            }
+        }
+
+        _.each(checkers, (checker) => {
+            this._checkers[checker.point.y][checker.point.x] = checker;
+        });
+    }
+
+    constructor(width, height) {
         this.width = width;
+        this.height = height;
 
         this.createCells();
     }
@@ -28,57 +52,36 @@ class RowModel {
     createCells() {
         this.cells = [];
 
-        for(let i = 0; i < this.width; i += 1) {
-            this.cells.push(new CellModel(
-                this, 
-                this.board, 
-                i, 
-                ((i + this.index) % 2 == 0)
-            ));
-        }
-    }
-}
-
-class BoardModel {
-    get checkers(){
-        return this._checkers;
-    }
-
-    set checkers(value){
-        this._checkers = value;
-    }
-
-    constructor(width, height) {
-        this.width = width;
-        this.height = height;
-
-        this.createRows();
-    }
-
-    createRows() {
-        this.rows = [];
-
         for(let i = 0; i < this.height; i += 1) {
-            this.rows.push(new RowModel(this, i, this.width));
+            this.cells[i] = [];
+
+            for(let j = 0; j < this.width; j += 1) {
+                this.cells[i][j] = new CellModel(
+                    this,
+                    new Point(i, j),
+                    ((i + j) % 2 == 0)
+                );
+            }
         }
     }
 }
 
 class CellView {
-    constructor(model, controller) {
-        this.model = model;
+    constructor(controller) {
         this.controller = controller;
 
         this.size = 64;
+
+        console.info(this.controller.model.point);
 
         this.boardView = this.controller.boardController.view;
     }
 
     draw() {
-        this.controller.boardController.view.ctx.fillStyle = this.model.color ? 'white' : 'black';
+        this.controller.boardController.view.ctx.fillStyle = this.controller.model.color ? 'white' : 'black';
         this.controller.boardController.view.ctx.fillRect(
-            this.boardView.borderWidth / 2 + this.boardView.padding + this.model.index * this.size,
-            this.boardView.borderWidth / 2 + this.boardView.padding + this.model.row.index * this.size,
+            this.boardView.borderWidth / 2 + this.boardView.padding + this.controller.model.point.x * this.size,
+            this.boardView.borderWidth / 2 + this.boardView.padding + this.controller.model.point.y * this.size,
             this.size,
             this.size
         );
@@ -86,7 +89,8 @@ class CellView {
 }
 
 class CellController {
-    constructor(boardController) {
+    constructor(model, boardController) {
+        this.model = model;
         this.boardController = boardController;
     }
 }
@@ -137,17 +141,14 @@ class Helper {
 }
 
 class BoardView {
-    constructor(model, controller, rootElem) {
+    constructor(controller, rootElem) {
         this.rootElem = rootElem;
-
-        this.model = model;
+        
         this.controller = controller;
 
         this.padding = 10;
         this.borderWidth = 2;
-        this.size = 64 * this.model.width; //todo 64
-
-        console.info(this.size, 'size');
+        this.size = 64 * this.controller.model.width; //todo 64
 
         this.init();
     }
@@ -176,19 +177,22 @@ class BoardView {
     }
 
     drawCells() {
-        for(let i = 0; i < this.model.height; i += 1) {
-            for(let j = 0; j < this.model.width; j += 1) {
-                let cellController = new CellController(this.controller);
-                let cellView = new CellView(this.model.rows[i].cells[j], cellController);
+        for(let i = 0; i < this.controller.model.height; i += 1) {
+            for(let j = 0; j < this.controller.model.width; j += 1) {
+                let cellController = new CellController(
+                    this.controller.model.cells[i, j],
+                    this.controller
+                );
+                let cellView = new CellView(cellController);
 
                 cellView.draw();
             }
         }
     }
 
-    drawCheckers() {
+    //drawCheckers() {
         
-    }
+    //}
 }
 
 class BoardController {
@@ -198,7 +202,7 @@ class BoardController {
 
         this.model = new BoardModel(width, height);
         this.model.checkers = checkers;
-        this.view = new BoardView(this.model, this, rootElem, width, height);
+        this.view = new BoardView(this, rootElem);
         
         this.init();
         //this.initEvents();
@@ -211,15 +215,15 @@ class BoardController {
 }
 
 class CheckerModel {
-    constructor(x, y, color) {
-        this.coords = new Point(x, y); //todo add checking on isPointBlack
+    constructor(point, color) {
+        this.point = point; //todo add checking on isPointBlack
         this.color = color;
     }
 }
 
 let checkers = [
-    new CheckerModel(1, 0, 1),
-    new CheckerModel(0, 5, 1)
+    new CheckerModel(new Point(1, 0), 1),
+    new CheckerModel(new Point(0, 5), 1)
 ];
 
 let boardController = new BoardController(document.body, 8, 8, checkers);

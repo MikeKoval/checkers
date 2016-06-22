@@ -1,6 +1,7 @@
 export
 class CellController {
-    constructor(boardController) {
+    constructor(model, boardController) {
+        this.model = model;
         this.boardController = boardController;
     }
 }

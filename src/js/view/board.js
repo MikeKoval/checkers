@@ -1,20 +1,18 @@
 import {CellView} from '../view/cell.js';
 import {CellController} from '../controller/cell.js';
+// import {CheckerController} from '../controller/checker.js';
 import {Helper} from '../helper/helper.js';
 
 export
 class BoardView {
-    constructor(model, controller, rootElem) {
+    constructor(controller, rootElem) {
         this.rootElem = rootElem;
-
-        this.model = model;
+        
         this.controller = controller;
 
         this.padding = 10;
         this.borderWidth = 2;
-        this.size = 64 * this.model.width; //todo 64
-
-        console.info(this.size, 'size');
+        this.size = 64 * this.controller.model.width; //todo 64
 
         this.init();
     }
@@ -43,10 +41,13 @@ class BoardView {
     }
 
     drawCells() {
-        for(let i = 0; i < this.model.height; i += 1) {
-            for(let j = 0; j < this.model.width; j += 1) {
-                let cellController = new CellController(this.controller);
-                let cellView = new CellView(this.model.rows[i].cells[j], cellController);
+        for(let i = 0; i < this.controller.model.height; i += 1) {
+            for(let j = 0; j < this.controller.model.width; j += 1) {
+                let cellController = new CellController(
+                    this.controller.model.cells[i, j],
+                    this.controller
+                );
+                let cellView = new CellView(cellController);
 
                 cellView.draw();
             }

@@ -9,7 +9,7 @@ class BoardController {
 
         this.model = new BoardModel(width, height);
         this.model.checkers = checkers;
-        this.view = new BoardView(this.model, this, rootElem, width, height);
+        this.view = new BoardView(this, rootElem);
         
         this.init();
         //this.initEvents();
