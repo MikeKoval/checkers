@@ -7,3 +7,5 @@ let checkers = [
 ];
 
 let boardController = new BoardController(document.body, 8, 8, checkers);
+
+boardController.view.draw();

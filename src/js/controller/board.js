@@ -1,4 +1,3 @@
-import {Helper} from '../helper/helper.js';
 import {BoardModel} from '../model/board.js';
 import {BoardView} from '../view/board.js';
 
@@ -8,15 +7,16 @@ class BoardController {
         this.width = width;
         this.height = height;
 
-        this.model = new BoardModel(width, height, checkers);
+        this.model = new BoardModel(width, height);
+        this.model.checkers = checkers;
         this.view = new BoardView(this.model, this, rootElem, width, height);
-
+        
         this.init();
         //this.initEvents();
     }
     
     init() {
-        this.view.draw();
+        //this.view.draw();
         //this.view.drawCheckers();
     }
 }

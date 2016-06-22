@@ -2,10 +2,17 @@ import {RowModel} from './row.js';
 
 export
 class BoardModel {
-    constructor(width, height, checkers) {
+    get checkers(){
+        return this._checkers;
+    }
+
+    set checkers(value){
+        this._checkers = value;
+    }
+
+    constructor(width, height) {
         this.width = width;
         this.height = height;
-        this.checkers = checkers;
 
         this.createRows();
     }
@@ -14,7 +21,7 @@ class BoardModel {
         this.rows = [];
 
         for(let i = 0; i < this.height; i += 1) {
-            this.rows[i] = new RowModel(this, i, this.width);
+            this.rows.push(new RowModel(this, i, this.width));
         }
     }
 }
